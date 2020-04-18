@@ -1,0 +1,24 @@
+apiVersion: keda.k8s.io/v1alpha1
+kind: ScaledObject
+metadata:
+  name: azure-eventhub-scaledobject
+  namespace: default
+  labels:
+    deploymentName: eventhub-consumer
+spec:
+  scaleTargetRef:
+    deploymentName: eventhub-consumer
+  pollingInterval: 15
+  cooldownPeriod: 100
+  maxReplicaCount: 8
+  minReplicaCount: 1
+  triggers:
+    - type: azure-eventhub
+      metadata:
+        # Required
+        connection: EVENTHUB_CONNECTION_STRING
+        storageConnection: AZURE_STORAGE_CONNECTION_STRING
+        # Optional
+        consumerGroup: test # default: $Default
+        unprocessedEventThreshold: "5" # default 64 events.
+        blobContainer: keda

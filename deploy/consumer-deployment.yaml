@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventhub-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventhub-consumer
+  template:
+    metadata:
+      labels:
+        app: eventhub-consumer
+    spec:
+      containers:
+        - name: eventhub-consumer
+          image: abhirockzz/eventhubs-consumer
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: EVENTHUB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: app-credentials
+                  key: eventhubs
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: app-credentials
+                  key: storage
+            - name: AZURE_STORAGE_CONTAINER
+              value: "keda"
+            - name: EVENTHUB_CONSUMER_GROUP
+              value: "test"
